@@ -1,0 +1,1 @@
+g++ main.cpp Vec3.cpp -std=c++17

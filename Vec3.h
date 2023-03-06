@@ -6,6 +6,7 @@
 class Vec3 {
 
     public:
+    inline Vec3() {};
     Vec3(double x, double y, double z);
 
     double X() const { return e[0]; };

@@ -38,6 +38,25 @@ bool hits_circle(const ray& r) {
     return false;
 }
 
+color get_color(const ray& r) {
+    const auto dist = r.origin() - sphere_center;
+    const double a = dot(r.direction(), r.direction());
+    const double b = 2 * dot(r.direction(), dist);
+    const double c = dot(dist, dist) - radius * radius;
+
+    const double t = (- b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
+
+    const point3 poi = r.origin() + t * r.direction();
+
+    Vec3 normal = poi - sphere_center;
+    normal = unit_vector(normal);
+
+    return Vec3((normal.X() + 1)/2, (normal.Y() + 1)/2, (normal.Z() + 1)/2);
+}
+
+// set ray eq = circle eq, this will be the poi 
+// normal = ray (point = poi, direction = poi - center)
+
 int main() {
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
@@ -49,7 +68,7 @@ int main() {
             ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
             color pixel_color;
             if (hits_circle(r)) {
-                pixel_color = color(1.0,0,0);
+                pixel_color = get_color(r);
             } else {
                 pixel_color = ray_color(r);
             }

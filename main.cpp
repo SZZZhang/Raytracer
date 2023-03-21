@@ -1,9 +1,13 @@
 #include <iostream>
 #include <cmath>
+#include <memory>
+
 #include "Vec3.h"
 #include "Ray.h"
 #include "Color.h"
 #include "Sphere.h"
+#include "HittableList.h"
+#include "utils.h"
 
 color ray_color(const ray& r) {
     Vec3 unit_direction = unit_vector(r.direction());
@@ -34,23 +38,15 @@ const Sphere sphere(sphere_center, radius);
 const double t_min = 0;
 const double t_max = 100;
 
-bool hits_circle(const ray& r) {
-    const auto dist = r.origin() - sphere_center;
-    if (std::pow(2 * dot(r.direction(), dist), 2) - 4 * dot(r.direction(), r.direction())
-        * (dot(dist, dist) - radius * radius) >= 0) {
-        return true;
-    }
-    return false;
-}
-
-color get_color(const ray& r) {
+color get_color(const ray& r, const Hittable& world) {
     hit_record record;
-    if (sphere.hit(r, t_min, t_max, record)) {
+    if (world.hit(r, 0, infinity, record)) {
         return Vec3((record.normal.X() + 1)/2, (record.normal.Y() + 1)/2, (record.normal.Z() + 1)/2);
     } else {
-        return ray_color(r);
+        Vec3 unit_direction = unit_vector(r.direction());
+        auto t = 0.5*(unit_direction.Y() + 1.0);
+        return (1.0-t)*color(1.0, 1.0, 1.0) + t*color(0.5, 0.7, 1.0);
     }
-
 }
 
 // set ray eq = circle eq, this will be the poi 
@@ -59,13 +55,18 @@ color get_color(const ray& r) {
 int main() {
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
+    // world
+    HittableList world;
+    world.add(std::make_shared<Sphere>(point3(0,0,-1), 0.5));
+    world.add(std::make_shared<Sphere>(point3(0,-100.5,-1), 100));
+
     for (int j = image_height-1; j >= 0; --j) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < image_width; ++i) {
             auto u = double(i) / (image_width-1);
             auto v = double(j) / (image_height-1);
             ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
-            color pixel_color = get_color(r);
+            color pixel_color = get_color(r, world);
             write_color(std::cout, pixel_color);
         }
     }

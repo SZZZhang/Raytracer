@@ -3,6 +3,7 @@
 #include "Vec3.h"
 #include "Ray.h"
 #include "Color.h"
+#include "Sphere.h"
 
 color ray_color(const ray& r) {
     Vec3 unit_direction = unit_vector(r.direction());
@@ -26,8 +27,12 @@ const auto vertical = Vec3(0, viewport_height, 0);
 const auto lower_left_corner = origin - horizontal/2 - vertical/2 - Vec3(0, 0, focal_length);
 
 // sphere
+
 const auto sphere_center = origin - Vec3(0, 0, focal_length);
 const auto radius = 0.5;
+const Sphere sphere(sphere_center, radius);
+const double t_min = 0;
+const double t_max = 100;
 
 bool hits_circle(const ray& r) {
     const auto dist = r.origin() - sphere_center;
@@ -39,19 +44,13 @@ bool hits_circle(const ray& r) {
 }
 
 color get_color(const ray& r) {
-    const auto dist = r.origin() - sphere_center;
-    const double a = dot(r.direction(), r.direction());
-    const double b = 2 * dot(r.direction(), dist);
-    const double c = dot(dist, dist) - radius * radius;
+    hit_record record;
+    if (sphere.hit(r, t_min, t_max, record)) {
+        return Vec3((record.normal.X() + 1)/2, (record.normal.Y() + 1)/2, (record.normal.Z() + 1)/2);
+    } else {
+        return ray_color(r);
+    }
 
-    const double t = (- b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
-
-    const point3 poi = r.origin() + t * r.direction();
-
-    Vec3 normal = poi - sphere_center;
-    normal = unit_vector(normal);
-
-    return Vec3((normal.X() + 1)/2, (normal.Y() + 1)/2, (normal.Z() + 1)/2);
 }
 
 // set ray eq = circle eq, this will be the poi 
@@ -66,12 +65,7 @@ int main() {
             auto u = double(i) / (image_width-1);
             auto v = double(j) / (image_height-1);
             ray r(origin, lower_left_corner + u*horizontal + v*vertical - origin);
-            color pixel_color;
-            if (hits_circle(r)) {
-                pixel_color = get_color(r);
-            } else {
-                pixel_color = ray_color(r);
-            }
+            color pixel_color = get_color(r);
             write_color(std::cout, pixel_color);
         }
     }

@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Hittable.h"
 #include "Color.h"
+#include "util.h"
 
 #include <iostream>
 
@@ -17,8 +18,14 @@ Camera::Camera(double aspect_ratio, int image_width) :
     lower_left_corner{origin - horizontal/2 - vertical/2 - Point3(0, 0, focal_length)}
       {}
 
+Point3 Camera::rand_point_in_square(Point3 pixel_center) const {
+    return pixel_center + (-0.5 + random_double(0.0,1.0)) * (horizontal/image_width)
+        + (-0.5 + random_double(0.0,1.0)) * (vertical/image_height);
+}
+
 Ray Camera::get_ray(double u, double v) const {
-    return Ray(origin, lower_left_corner + u*horizontal + v*vertical - origin);
+    Point3 pixel_center = lower_left_corner + u*horizontal + v*vertical;
+    return Ray(origin, rand_point_in_square(pixel_center));
 }
 
 Color get_color(const Ray& r, const Hittable& world) {
@@ -39,11 +46,15 @@ void Camera::render(Hittable& world) const {
     for (int j = image_height-1; j >= 0; --j) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < image_width; ++i) {
-            auto u = (i + random_double()) / (image_width-1);
-            auto v = (j + random_double()) / (image_height-1);
-            Ray r =  get_ray(u, v);
-            Color c = get_color(r, world);
-            write_color(std::cout, c, samples_per_pixel);
+            double u = static_cast<double>(i) / static_cast<double>(image_width-1);
+            double v = static_cast<double>(j) / static_cast<double>(image_height-1);
+            Color pixel_color(0,0,0);
+            for (int sample = 0; sample < samples_per_pixel; ++sample) {
+                Ray r =  get_ray(u, v);
+                Color c = get_color(r, world);
+                pixel_color += c;
+            }
+            write_color(std::cout, pixel_color, samples_per_pixel);
         }
     }
 

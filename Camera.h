@@ -10,9 +10,10 @@ class Camera {
         
         Camera(double aspect_ratio, int image_width);
         void render(Hittable& world) const;
+        Point3 rand_point_in_square(Point3 pixel_center) const;
 
     private:
-        const int samples_per_pixel = 1;
+        const int samples_per_pixel = 100;
 
         // Image
         const int image_height;

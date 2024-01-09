@@ -19,8 +19,8 @@ inline double clamp(double x, double min, double max) {
     return x;
 }
 
-inline double random_double() {
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+inline double random_double(double min, double max) {
+    static std::uniform_real_distribution<double> distribution(min, max);
     static std::mt19937 generator;
     return distribution(generator);
 }

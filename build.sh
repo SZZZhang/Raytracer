@@ -1,1 +1,1 @@
-g++ main.cpp Vec3.cpp -std=c++17
+g++ main.cpp Vec3.cpp Sphere.cpp -std=c++17

@@ -1,1 +1,1 @@
-./a.out > stuff.ppm
+./a.out > stuff1.ppm

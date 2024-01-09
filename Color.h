@@ -6,7 +6,7 @@
 #include <iostream>
 #include <algorithm>
 
-void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {
+void write_color(std::ostream &out, Color pixel_color, int samples_per_pixel) {
     auto r = pixel_color.X();
     auto g = pixel_color.Y();
     auto b = pixel_color.Z();

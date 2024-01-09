@@ -2,7 +2,7 @@
 
 #include "Sphere.h"
 
-bool Sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
+bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const {
     const auto dist = r.origin() - center;
     const double a = dot(r.direction(), r.direction());
     const double b = 2 * dot(r.direction(), dist);
@@ -18,7 +18,7 @@ bool Sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
         return false;
     }
     
-    const point3 poi = r.origin() + t * r.direction();
+    const Point3 poi = r.origin() + t * r.direction();
 
     rec.t = t;
     rec.p = r.at(t);

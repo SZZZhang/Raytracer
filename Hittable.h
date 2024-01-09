@@ -2,13 +2,13 @@
 
 #include "Ray.h"
 
-struct hit_record {
-    point3 p;
+struct HitRecord {
+    Point3 p;
     Vec3 normal;
     double t;
     bool front_face;
 
-    inline void set_face_normal(const ray& r, Vec3& outward_normal) {
+    inline void set_face_normal(const Ray& r, Vec3& outward_normal) {
         front_face = dot(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal :-outward_normal;
     }
@@ -18,5 +18,5 @@ struct hit_record {
 class Hittable
 {
 public:
-    virtual bool hit(const ray& r, double t_min, double t_max, hit_record& re) const = 0;
+    virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& re) const = 0;
 };

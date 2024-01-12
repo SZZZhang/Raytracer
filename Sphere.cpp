@@ -12,13 +12,14 @@ bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const
         return false;
     }
     
-    const double t = (- b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
+    double t = (- b - std::sqrt(b * b - 4 * a * c)) / (2 * a);
 
-    if (t < t_min || t > t_max) {
-        return false;
+    if (t <= t_min || t >= t_max) {
+        t = (- b + std::sqrt(b * b - 4 * a * c)) / (2 * a);
+        if (t <= t_min || t >= t_max) {
+            return false;
+        }
     }
-    
-    const Point3 poi = r.origin() + t * r.direction();
 
     rec.t = t;
     rec.p = r.at(t);

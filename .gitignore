@@ -1,3 +1,6 @@
 *.ppm
 a.out
 .vscode
+a.out.dSYM
+.DS_Store
+render archive

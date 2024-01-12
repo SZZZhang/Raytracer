@@ -13,7 +13,8 @@ class Camera {
         Point3 rand_point_in_square(Point3 pixel_center) const;
 
     private:
-        const int samples_per_pixel = 100;
+        const int samples_per_pixel = 50;
+        const int max_get_color_depth = 50;
 
         // Image
         const int image_height;

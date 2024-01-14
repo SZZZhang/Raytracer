@@ -5,6 +5,11 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cmath>
+
+inline double linear_to_gamma(double linear) {
+    return std::sqrt(linear);
+}
 
 void write_color(std::ostream &out, Color pixel_color, int samples_per_pixel) {
     auto r = pixel_color.X();
@@ -16,6 +21,10 @@ void write_color(std::ostream &out, Color pixel_color, int samples_per_pixel) {
     r *= scale;
     g *= scale;
     b *= scale;
+
+    r = linear_to_gamma(r);
+    g = linear_to_gamma(g);
+    b = linear_to_gamma(b);
 
     // Write the translated [0,255] value of each color component.
     out << static_cast<int>(256 * std::clamp(r, 0.0, 0.999)) << ' '

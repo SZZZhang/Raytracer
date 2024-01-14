@@ -33,9 +33,10 @@ Color get_color(const Ray& r, const Hittable& world, int max_depth) {
     if (max_depth <= 0) {
         return Color(0.0,0.0,0.0);
     }
-    if (world.hit(r, 0, infinity, record)) {
+    if (world.hit(r, 0.001, infinity, record)) {
         Vec3 unit_vec = random_vec_unit();
         Vec3 direction = (dot(unit_vec, record.normal) > 0.0) ? unit_vec : -unit_vec;
+        direction = direction + record.normal;
         return 0.5 * get_color(Ray(record.p, direction), world, max_depth - 1);
     } else {
         // Background

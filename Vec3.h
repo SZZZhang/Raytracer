@@ -21,6 +21,7 @@ class Vec3 {
 
     double length() const;
     double length_squared() const;
+    bool near_zero() const;
 
     private:
     double e[3];
@@ -69,7 +70,6 @@ inline Vec3 cross(const Vec3 &u, const Vec3 &v) {
 inline Vec3 unit_vector(Vec3 v) {
     return v / v.length();
 }
-
 
 using Point3 = Vec3;  
 using Color = Vec3;   

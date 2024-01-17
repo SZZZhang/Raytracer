@@ -42,7 +42,12 @@ Vec3& Vec3::operator-() {
 double Vec3::length() const {
     return std::sqrt(length_squared());
 }
+
 double Vec3::length_squared() const {
     return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
 }
 
+bool Vec3::near_zero() const {
+    double tiny = 1e-8;
+    return (std::fabs(X()) < tiny && std::fabs(Y()) < tiny && std::fabs(Z()) < tiny);
+}

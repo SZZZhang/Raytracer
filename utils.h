@@ -35,6 +35,10 @@ inline Vec3 random_vec_unit() {
     return unit_vector(rand_point);
 }
 
+inline Vec3 reflect(const Vec3& v, const Vec3& normal) {
+    return v - 2 * dot(v, normal) * normal;
+}
+
 // Common Headers
 #include "Ray.h"
 #include "Vec3.h"

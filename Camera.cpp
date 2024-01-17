@@ -1,7 +1,8 @@
 #include "Camera.h"
 #include "Hittable.h"
 #include "Color.h"
-#include "util.h"
+#include "Material.h"
+#include "utils.h"
 
 #include <iostream>
 
@@ -34,10 +35,12 @@ Color get_color(const Ray& r, const Hittable& world, int max_depth) {
         return Color(0.0,0.0,0.0);
     }
     if (world.hit(r, 0.001, infinity, record)) {
-        Vec3 unit_vec = random_vec_unit();
-        Vec3 direction = (dot(unit_vec, record.normal) > 0.0) ? unit_vec : -unit_vec;
-        direction = direction + record.normal;
-        return 0.5 * get_color(Ray(record.p, direction), world, max_depth - 1);
+        Ray scattered;
+        Color attenuation;
+        if (record.material->scatter(r, record, attenuation, scattered)) {
+            return attenuation * get_color(scattered, world, max_depth - 1);
+        }
+        return Color(0.0,0.0,0.0);
     } else {
         // Background
         Vec3 unit_direction = unit_vector(r.direction()); 

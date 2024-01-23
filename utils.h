@@ -39,6 +39,13 @@ inline Vec3 reflect(const Vec3& v, const Vec3& normal) {
     return v - 2 * dot(v, normal) * normal;
 }
 
+inline Vec3 refract(const Vec3& ray, const Vec3& normal, double refract_ratio) {
+    Vec3 ray_copy = Vec3(ray);
+    Vec3 refracted_perpendicular = refract_ratio * (ray + fmin(dot(-ray_copy, normal), 1.0) * normal);
+    Vec3 refracted_parallel = -1 * sqrt(fabs(1.0 - refracted_perpendicular.length_squared())) * normal;
+    return refracted_perpendicular + refracted_parallel;
+}
+
 // Common Headers
 #include "Ray.h"
 #include "Vec3.h"

@@ -10,13 +10,17 @@ Camera::Camera(double aspect_ratio, int image_width) :
     aspect_ratio{aspect_ratio},
     image_width{image_width},
     image_height{static_cast<int>(image_width / aspect_ratio)},
-    viewport_height{2.0},
+    w{unit_vector(lookfrom - lookat)},
+    u{unit_vector(cross(vertical_up, w))},
+    v{cross(w, u)},
+    focal_length{Vec3(lookfrom - lookat).length()},
+    vertical_fov_rad{1.5708}, // 90 degrees
+    //vertical_fov_rad{0.349}, // 20 degrees
+    viewport_height{2.0 * tan(vertical_fov_rad/2) * focal_length},
     viewport_width{aspect_ratio * viewport_height},
-    focal_length{1.0},
-    origin{Point3(0, 0, 0)},
-    horizontal{Vec3(viewport_width, 0.0, 0.0)},
-    vertical{Vec3(0.0, viewport_height, 0.0)},
-    lower_left_corner{origin - horizontal/2 - vertical/2 - Point3(0, 0, focal_length)}
+    horizontal{viewport_width * u},
+    vertical{-1 * viewport_height * v},
+    upper_left_corner{lookfrom - (focal_length * w) - horizontal/2 - vertical/2}
       {}
 
 Point3 Camera::rand_point_in_square(Point3 pixel_center) const {
@@ -25,8 +29,8 @@ Point3 Camera::rand_point_in_square(Point3 pixel_center) const {
 }
 
 Ray Camera::get_ray(double u, double v) const {
-    Point3 pixel_center = lower_left_corner + u*horizontal + v*vertical;
-    return Ray(origin, rand_point_in_square(pixel_center));
+    Point3 pixel_center = upper_left_corner + u*horizontal + v*vertical;
+    return Ray(lookfrom, rand_point_in_square(pixel_center - lookfrom));
 }
 
 Color get_color(const Ray& r, const Hittable& world, int max_depth) {
@@ -34,7 +38,7 @@ Color get_color(const Ray& r, const Hittable& world, int max_depth) {
     if (max_depth <= 0) {
         return Color(0.0,0.0,0.0);
     }
-    if (world.hit(r, 0.001, infinity, record)) {
+    if (world.hit(r, 0.00001, infinity, record)) {
         Ray scattered;
         Color attenuation;
         if (record.material->scatter(r, record, attenuation, scattered)) {
@@ -52,8 +56,8 @@ Color get_color(const Ray& r, const Hittable& world, int max_depth) {
 void Camera::render(Hittable& world) const {
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
-    for (int j = image_height-1; j >= 0; --j) {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+    for (int j = 0; j < image_height; ++j) {
+        std::cerr << "\rScanlines remaining: " << image_height - 1 - j << ' ' << std::flush;
         for (int i = 0; i < image_width; ++i) {
             double u = static_cast<double>(i) / static_cast<double>(image_width-1);
             double v = static_cast<double>(j) / static_cast<double>(image_height-1);

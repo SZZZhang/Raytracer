@@ -13,14 +13,16 @@ Camera::Camera(double aspect_ratio, int image_width) :
     w{unit_vector(lookfrom - lookat)},
     u{unit_vector(cross(vertical_up, w))},
     v{cross(w, u)},
-    focal_length{Vec3(lookfrom - lookat).length()},
-    vertical_fov_rad{1.5708}, // 90 degrees
-    //vertical_fov_rad{0.349}, // 20 degrees
-    viewport_height{2.0 * tan(vertical_fov_rad/2) * focal_length},
+    //vertical_fov_rad{1.5708}, // 90 degrees
+    vertical_fov_rad{0.349}, // 20 degrees
+    viewport_height{2.0 * tan(vertical_fov_rad/2) * focus_dist},
     viewport_width{aspect_ratio * viewport_height},
     horizontal{viewport_width * u},
     vertical{-1 * viewport_height * v},
-    upper_left_corner{lookfrom - (focal_length * w) - horizontal/2 - vertical/2}
+    upper_left_corner{lookfrom - (focus_dist * w) - horizontal/2 - vertical/2},
+    defocus_radius{focus_dist * tan(degrees_to_radians(defocus_angle/2))},
+    defocus_horizontal{horizontal * defocus_radius},
+    defocus_vertical{vertical * defocus_radius}
       {}
 
 Point3 Camera::rand_point_in_square(Point3 pixel_center) const {
@@ -30,7 +32,10 @@ Point3 Camera::rand_point_in_square(Point3 pixel_center) const {
 
 Ray Camera::get_ray(double u, double v) const {
     Point3 pixel_center = upper_left_corner + u*horizontal + v*vertical;
-    return Ray(lookfrom, rand_point_in_square(pixel_center - lookfrom));
+    Vec3 random_vec_in_disk = random_in_unit_disk();
+    Point3 ray_origin = defocus_radius == 0 ? lookfrom : 
+        lookfrom + random_vec_in_disk.X() * defocus_horizontal + random_vec_in_disk.Y() * defocus_vertical;
+    return Ray(ray_origin, rand_point_in_square(pixel_center - ray_origin));
 }
 
 Color get_color(const Ray& r, const Hittable& world, int max_depth) {

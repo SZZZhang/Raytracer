@@ -35,6 +35,14 @@ inline Vec3 random_vec_unit() {
     return unit_vector(rand_point);
 }
 
+inline Vec3 random_in_unit_disk() {
+    Vec3 rand_point = Vec3(0,0,0);
+    while(rand_point.length() == 0 || rand_point.length() > 1) {
+        rand_point = Vec3(random_double(-1.0,1.0), random_double(-1.0,1.0), 0);
+    }
+    return unit_vector(rand_point);
+}
+
 inline Vec3 reflect(const Vec3& v, const Vec3& normal) {
     return v - 2 * dot(v, normal) * normal;
 }

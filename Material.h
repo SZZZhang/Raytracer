@@ -52,12 +52,12 @@ class Dielectric : public Material {
         bool scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered_ray) const override {
             double refract_ratio = record.front_face ? 1.0/refract_index : refract_index;
             attenuation = Color(1.0,1.0,1.0);
-
-            // Check if ray should be refracted or reflected 
+            
             double cos_theta = fmin(dot(-unit_vector(ray.direction()), record.normal), 1.0); 
             double sin_theta = std::sqrt(1.0 - cos_theta * cos_theta);
             double rand_double = random_double(0.0, 1.0);
 
+            // Total internal reflection
             if (refract_ratio * sin_theta > 1.0 || 
                 reflectance(cos_theta, refract_index) > rand_double)
             {

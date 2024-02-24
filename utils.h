@@ -8,6 +8,9 @@
 
 // Constants
 
+// TODO: remove
+#include <iostream>
+
 const double infinity = std::numeric_limits<double>::infinity();
 const double pi = 3.1415926535897932385;
 
@@ -48,10 +51,10 @@ inline Vec3 reflect(const Vec3& v, const Vec3& normal) {
 }
 
 inline Vec3 refract(const Vec3& ray, const Vec3& normal, double refract_ratio) {
-    Vec3 ray_copy = Vec3(ray);
-    Vec3 refracted_perpendicular = refract_ratio * (ray + fmin(dot(-ray_copy, normal), 1.0) * normal);
+    double cos_theta = fmin(dot(-unit_vector(ray), normal), 1.0);
+    Vec3 refracted_perpendicular = refract_ratio * (ray + (cos_theta * normal));
     Vec3 refracted_parallel = -1 * sqrt(fabs(1.0 - refracted_perpendicular.length_squared())) * normal;
-    return refracted_perpendicular + refracted_parallel;
+    return unit_vector(refracted_perpendicular + refracted_parallel);
 }
 
 // Common Headers

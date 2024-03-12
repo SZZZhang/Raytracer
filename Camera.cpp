@@ -35,7 +35,9 @@ Ray Camera::get_ray(double u, double v) const {
     Vec3 random_vec_in_disk = random_in_unit_disk();
     Point3 ray_origin = defocus_radius == 0 ? lookfrom : 
         lookfrom + random_vec_in_disk.X() * defocus_horizontal + random_vec_in_disk.Y() * defocus_vertical;
-    return Ray(ray_origin, rand_point_in_square(pixel_center - ray_origin));
+    
+    double ray_time = random_double(0.0, 1.0);
+    return Ray(ray_origin, rand_point_in_square(pixel_center - ray_origin), ray_time);
 }
 
 Color get_color(const Ray& r, const Hittable& world, int max_depth) {

@@ -3,6 +3,7 @@
 #include "Sphere.h"
 
 bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const {
+    const Point3 center = center_at_time(r.time());
     const auto dist = r.origin() - center;
     const double a = dot(r.direction(), r.direction());
     const double b = 2 * dot(r.direction(), dist);
@@ -28,4 +29,8 @@ bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const
     rec.material = material;
 
     return true;
+}
+
+Point3 Sphere::center_at_time(double time) const {
+    return center + time * move_vec;
 }

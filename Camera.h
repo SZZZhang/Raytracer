@@ -21,7 +21,7 @@ class Camera {
         const Vec3 vertical_up = Point3(0.0, 1.0, 0.0);
 
         const double focus_dist = 3.4; 
-        const double defocus_angle = 10;
+        const double defocus_angle = 0;
 
         const Vec3 w, u, v; // Orthonormal basis for camera orientation
 

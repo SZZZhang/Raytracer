@@ -9,7 +9,9 @@ class Sphere : public Hittable {
          : center{cen}, radius{r}, material{mat}, move_vec{mv_vec} {};
         
         Point3 center_at_time(double time) const;
-        virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
+        bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
+        
+        static void get_sphere_uv(const Point3& p, double& u, double& v);
 
     private:
         Point3 center;

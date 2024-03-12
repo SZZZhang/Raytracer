@@ -16,7 +16,8 @@ class Camera {
         const int samples_per_pixel = 50;
         const int max_get_color_depth = 50;
 
-        const Point3 lookfrom = Point3(-2.0, 2.0, 1.0);
+        //const Point3 lookfrom = Point3(-2.0, 2.0, 1.0);
+        const Point3 lookfrom = Point3(0.0, 0.0, 5.0);
         const Point3 lookat = Point3(0.0, 0.0, -1.0);
         const Vec3 vertical_up = Point3(0.0, 1.0, 0.0);
 

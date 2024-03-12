@@ -13,8 +13,8 @@ Camera::Camera(double aspect_ratio, int image_width) :
     w{unit_vector(lookfrom - lookat)},
     u{unit_vector(cross(vertical_up, w))},
     v{cross(w, u)},
-    //vertical_fov_rad{1.5708}, // 90 degrees
-    vertical_fov_rad{0.349}, // 20 degrees
+    vertical_fov_rad{1.5708}, // 90 degrees
+    //vertical_fov_rad{0.349}, // 20 degrees
     viewport_height{2.0 * tan(vertical_fov_rad/2) * focus_dist},
     viewport_width{aspect_ratio * viewport_height},
     horizontal{viewport_width * u},

@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "Sphere.h"
+#include "utils.h"
 
 bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const {
     const Point3 center = center_at_time(r.time());
@@ -27,10 +28,19 @@ bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const
     Vec3 outward_normal = (rec.p - center) / radius;
     rec.set_face_normal(r, outward_normal);
     rec.material = material;
+    get_sphere_uv(outward_normal, rec.u, rec.v);
 
     return true;
 }
 
 Point3 Sphere::center_at_time(double time) const {
     return center + time * move_vec;
+}
+
+void Sphere::get_sphere_uv(const Point3& point, double& u, double& v) {
+    double theta = std::acos(-point.Y());
+    double phi = std::atan2(-point.Z(), point.X()) + pi;
+
+    u = phi/ (2 * pi);
+    v = theta / pi;
 }

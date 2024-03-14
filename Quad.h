@@ -6,8 +6,6 @@ class Quad : public Hittable {
     public:
         Quad(const Point3& q_, const Vec3& u_, const Vec3& v_, std::shared_ptr<Material> mat)
             : q{q_}, u{u_}, v{v_}, norm{ unit_vector(cross(u, v)) }, material{mat} {}
-
-        ~Quad();
         
         bool hit(const Ray& r, double t_min, double t_max, HitRecord& re) const override;
 

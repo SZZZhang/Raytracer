@@ -26,8 +26,6 @@ class SolidColor : public Texture {
         Color the_color;
 };
 
-
-
 class CheckerTexture : public Texture {
     public:
         CheckerTexture(double scal, Color a, Color b)

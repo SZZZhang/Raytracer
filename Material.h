@@ -8,6 +8,7 @@ class Material {
     public:
         virtual ~Material() = default;
         virtual bool scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered_ray) const = 0;
+        virtual Color emitted(double u, double v, const Point3& point) const { return Color(0, 0, 0); }
 };
 
 class Lambertian : public Material {
@@ -82,4 +83,21 @@ class Dielectric : public Material {
         r0 = r0 * r0;
         return r0 + (1 - r0) * pow((1 - cosine), 5);
     }
+};
+
+class DiffuseLight : public Material {
+    public:
+        DiffuseLight(Color color) : texture{ std::make_shared<SolidColor>(color) } {}
+
+        bool scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered_ray) const override {
+            attenuation = Color(0.1,0.1,0.1);
+            return false;
+        }
+
+        Color emitted(double u, double v, const Point3& point) const override {
+            return texture->value(u, v, point);
+        };
+
+    private:
+        std::shared_ptr<Texture> texture;
 };

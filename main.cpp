@@ -9,7 +9,7 @@
 #include "Camera.h"
 #include "Material.h"
 
-const double aspect_ratio = 16.0 / 9.0;
+const double aspect_ratio = 1; //16.0 / 9.0;
 const int image_width = 400;
 
 void cornell_box(HittableList& world, Camera& cam) {
@@ -25,6 +25,17 @@ void cornell_box(HittableList& world, Camera& cam) {
     world.add(std::make_shared<Quad>(Point3(0,0,0), Vec3(555,0,0), Vec3(0,0,555), white));
     world.add(std::make_shared<Quad>(Point3(555,555,555), Vec3(-555,0,0), Vec3(0,0,-555), white));
     world.add(std::make_shared<Quad>(Point3(0,0,555), Vec3(555,0,0), Vec3(0,555,0), white));
+
+    //world.add(std::make_shared<Quad>(Point3(0,0,-100), Vec3(555,0,0), Vec3(0,555,0), white));
+
+    // Glass sphere
+    //auto glass = std::make_shared<Dielectric>(Color(1.0, 1.0, 1.0), 1.5);
+    //world.add(std::make_shared<Sphere>(Point3(190,90,190), 90, glass));
+    
+    //world.add(Quad::get_box(Point3(130, 0, 65), Point3(295, 165, 230), white));
+    //world.add(Quad::get_box(Point3(265, 0, 295), Point3(430, 330, 460), white));
+    world.add(Quad::get_box(Point3(130, 0, 65), Vec3(165, 0, 0), Vec3(0,0, 230), 165, white, -18));
+    world.add(Quad::get_box(Point3(265, 0, 295), Vec3(165, 0, 0), Vec3(0, 0, 165), 330, white, 18));
 }
 
 int main() {

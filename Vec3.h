@@ -17,7 +17,7 @@ class Vec3 {
     Vec3& operator-=(Vec3& vec);
     Vec3& operator*=(Vec3& vec);
     Vec3& operator/=(Vec3& vec);
-    Vec3& operator-();
+    Vec3 operator-() const;
 
     double length() const;
     double length_squared() const;
@@ -69,6 +69,10 @@ inline Vec3 cross(const Vec3 &u, const Vec3 &v) {
 
 inline Vec3 unit_vector(Vec3 v) {
     return v / v.length();
+}
+
+inline bool operator==(const Vec3 &u, const Vec3 &v) {
+    return (u.X() == v.X() && u.Y() == v.Y() && u.Z() == v.Z());
 }
 
 using Point3 = Vec3;  

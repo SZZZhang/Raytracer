@@ -13,6 +13,11 @@ class HittableList : public Hittable {
 
         void clear() { objects.clear(); }
         void add(std::shared_ptr<Hittable> object) { objects.push_back(object); }
+        void add(std::shared_ptr<HittableList> list) {
+            for (auto object: list->objects) {
+                objects.push_back(object);
+            }
+        }
 
     private:
         std::vector<std::shared_ptr<Hittable>> objects;
@@ -20,7 +25,7 @@ class HittableList : public Hittable {
     virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
 };
 
-bool HittableList::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const {
+inline bool HittableList::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const {
     HitRecord temp_rec;
     bool hit_anything = false;
     auto closest_so_far = t_max;

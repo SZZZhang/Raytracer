@@ -32,11 +32,8 @@ Vec3& Vec3::operator/=(Vec3& vec) {
     return *this;
 }
 
-Vec3& Vec3::operator-() {
-    e[0] *= -1;
-    e[1] *= -1;
-    e[2] *= -1;
-    return *this;
+Vec3 Vec3::operator-() const {
+    return Vec3(-1 * e[0], -1 * e[1], -1 * e[2]);
 }
 
 double Vec3::length() const {

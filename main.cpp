@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Material.h"
 #include "BHV.h"
+#include "Triangle.h"
 
 const double aspect_ratio = 1; //16.0 / 9.0;
 const int image_width = 400;
@@ -44,6 +45,11 @@ void single_sphere(HittableList& world, Camera& cam) {
     world.add(std::make_shared<Sphere>(Point3(190,90,190), 90, red));
 
     world.add(std::make_shared<Sphere>(Point3(20,90,190), 90, red));
+}
+
+void single_triangle(HittableList& world, Camera& cam) {
+    std::shared_ptr<Lambertian> green = std::make_shared<Lambertian>(Color(.12, .45, .15));
+    world.add(std::make_shared<Triangle>(Point3(555,0,0), Vec3(0,555,0), Vec3(0,0,555), green));
 }
 
 int main() {
@@ -90,7 +96,8 @@ int main() {
     // world.add(std::make_shared<Quad>(Point3(-2, 3, 1), Vec3(4, 0, 0), Vec3(0, 0, 4), light));
     // world.add(std::make_shared<Quad>(Point3(-2,-3, 5), Vec3(4, 0, 0), Vec3(0, 0,-4), lower_teal));
     
-    cornell_box(world, camera);
+    //cornell_box(world, camera);
+    single_triangle(world, camera);
     //single_sphere(world,camera);
 
     world = HittableList(std::make_shared<BhvNode>(world.objects));

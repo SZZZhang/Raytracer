@@ -30,6 +30,12 @@ inline double random_double(double min, double max) {
     return distribution(generator);
 }
 
+inline int random_int(int min, int max) {
+    std::uniform_int_distribution<int> distribution(min, max);
+    static std::mt19937 generator;
+    return distribution(generator);
+}
+
 inline Vec3 random_vec_unit() {
     Vec3 rand_point = Vec3(0,0,0);
     while(rand_point.length() == 0 || rand_point.length() > 1) {

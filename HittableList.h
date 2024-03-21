@@ -12,17 +12,22 @@ class HittableList : public Hittable {
         HittableList(std::shared_ptr<Hittable> object) { add(object); }
 
         void clear() { objects.clear(); }
-        void add(std::shared_ptr<Hittable> object) { objects.push_back(object); }
+        void add(std::shared_ptr<Hittable> object) { 
+            objects.push_back(object); 
+            box = Aabb(box, object->bounding_box());
+        }
         void add(std::shared_ptr<HittableList> list) {
             for (auto object: list->objects) {
-                objects.push_back(object);
+                add(object);
             }
         }
+        virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
+
+        std::vector<std::shared_ptr<Hittable>> objects;
+        virtual Aabb bounding_box() const override { return box; }
 
     private:
-        std::vector<std::shared_ptr<Hittable>> objects;
-    
-    virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
+        Aabb box;
 };
 
 inline bool HittableList::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const {

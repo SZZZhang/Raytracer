@@ -6,25 +6,27 @@
 
 #include <iostream>
 
-Camera::Camera(double aspect_ratio, int image_width) :
-    aspect_ratio{aspect_ratio},
-    image_width{image_width},
-    image_height{static_cast<int>(image_width / aspect_ratio)},
-    w{unit_vector(lookfrom - lookat)},
-    u{unit_vector(cross(vertical_up, w))},
-    v{cross(w, u)},
-   // vertical_fov_rad{1.5708}, // 90 degrees
-    vertical_fov_rad{0.7}, // 40 degrees
-    //vertical_fov_rad{0.349}, // 20 degrees
-    viewport_height{2.0 * tan(vertical_fov_rad/2) * focus_dist},
-    viewport_width{aspect_ratio * viewport_height},
-    horizontal{viewport_width * u},
-    vertical{-1 * viewport_height * v},
-    upper_left_corner{lookfrom - (focus_dist * w) - horizontal/2 - vertical/2},
-    defocus_radius{focus_dist * tan(degrees_to_radians(defocus_angle/2))},
-    defocus_horizontal{horizontal * defocus_radius},
-    defocus_vertical{vertical * defocus_radius}
-      {}
+void Camera::initialize(double aspect_ratio_, int image_width_) {
+    aspect_ratio = aspect_ratio_;
+    image_width = image_width_;
+    image_height = static_cast<int>(image_width / aspect_ratio);
+    
+    w = unit_vector(lookfrom - lookat);
+    u = unit_vector(cross(vertical_up, w));
+    v = cross(w, u);
+
+    viewport_height = 2.0 * tan(vertical_fov_rad/2) * focus_dist;
+    viewport_width = aspect_ratio * viewport_height;
+
+    horizontal = viewport_width * u;
+    vertical = -1 * viewport_height * v;
+    upper_left_corner = lookfrom - (focus_dist * w) - horizontal/2 - vertical/2;
+
+    defocus_radius = focus_dist * tan(degrees_to_radians(defocus_angle/2));
+    defocus_horizontal = horizontal * defocus_radius;
+    defocus_vertical = vertical * defocus_radius;
+
+}
 
 Point3 Camera::rand_point_in_square(Point3 pixel_center) const {
     return pixel_center + (-0.5 + random_double(0.0,1.0)) * (horizontal/image_width)
@@ -38,14 +40,16 @@ Ray Camera::get_ray(double u, double v) const {
         lookfrom + random_vec_in_disk.X() * defocus_horizontal + random_vec_in_disk.Y() * defocus_vertical;
     
     double ray_time = random_double(0.0, 1.0);
-    
     //return Ray(ray_origin, pixel_center - ray_origin, ray_time); // No antialiasing
     return Ray(ray_origin, rand_point_in_square(pixel_center - ray_origin), ray_time);
 }
 
+int case1 = 0, case2 = 0, case3 = 0, case4 =0;
+
 Color get_color(const Ray& r, const Hittable& world, int max_depth) {
     HitRecord record;
     if (max_depth <= 0) {
+        ++case1;
         return Color(0.0,0.0,0.0);
     }
     if (world.hit(r, 0.00001, infinity, record)) {
@@ -54,18 +58,27 @@ Color get_color(const Ray& r, const Hittable& world, int max_depth) {
         Color emitted_color = record.material->emitted(record.u, record.v, record.p);
 
         if (!record.material->scatter(r, record, attenuation, scattered)) {
+        ++case2;
             return emitted_color;
         }
-
-        return attenuation * get_color(scattered, world, max_depth - 1);
+        ++case3;
+        Color scattered_col = get_color(scattered, world, max_depth - 1);
+        if (scattered_col.length() < 1e-8) {
+            return attenuation * Color(0.5,0.5,0.5);
+        }
+        return attenuation * scattered_col;
     } else {
         // Background
-        return Color(0,0,0);
+        ++case4;
+        //return Color(0,0,0);
+    
+        // Beige: 
+        //return Color(207.0/250.0, 185.0/250.0, 151.0/250.0);
 
         // Blueish white background
-        // Vec3 unit_direction = unit_vector(r.direction()); 
-        // auto t = 0.5*(unit_direction.Y() + 1.0);
-        // return Color((1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0));
+        Vec3 unit_direction = unit_vector(r.direction()); 
+        auto t = 0.5*(unit_direction.Y() + 1.0);
+        return Color((1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0));
     }
 }
 
@@ -92,4 +105,6 @@ void Camera::render(Hittable& world) const {
     // get_color(get_ray(u, v), world, max_get_color_depth);
 
     std::cerr << "\nDone\n";
+
+    std::cerr << "max depth: " << case1 << ", light: " << case2 << ", bounce: " << case3 << ", background: " << case4 << std::endl;
 }

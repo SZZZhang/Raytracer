@@ -1,5 +1,6 @@
 #include <cmath>
 #include <memory>
+#include <string>
 
 #include "Vec3.h"
 #include "Sphere.h"
@@ -10,6 +11,7 @@
 #include "Material.h"
 #include "BHV.h"
 #include "Triangle.h"
+#include "ObjLoader.h"
 
 const double aspect_ratio = 1; //16.0 / 9.0;
 const int image_width = 400;
@@ -48,13 +50,50 @@ void single_sphere(HittableList& world, Camera& cam) {
 }
 
 void single_triangle(HittableList& world, Camera& cam) {
+   
     std::shared_ptr<Lambertian> green = std::make_shared<Lambertian>(Color(.12, .45, .15));
     world.add(std::make_shared<Triangle>(Point3(555,0,0), Vec3(0,555,0), Vec3(0,0,555), green));
 }
 
+void obj(HittableList& world, Camera& cam) {
+    auto glass = std::make_shared<Dielectric>(Color(1.0, 1.0, 1.0), 1.5);
+    //std::shared_ptr<Lambertian> white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+    //std::shared_ptr<Lambertian> red  = std::make_shared<Lambertian>(Color(.65, .05, .05));
+
+    ObjLoader::load(world, "./DIAMOND.obj", glass);
+
+    cam.lookfrom = Point3(0, 0, 6);
+    cam.lookat = Point3(0,0,0);
+}
+
+void diamond_obj(HittableList& world, Camera& cam) {
+    auto glass = std::make_shared<Dielectric>(Color(1.0, 1.0, 1.0), 1.5);
+    std::shared_ptr<Lambertian> white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+    std::shared_ptr<Lambertian> red  = std::make_shared<Lambertian>(Color(.65, .05, .05));
+
+    ObjLoader::load(world, "./DIAMOND.obj", glass);
+
+    cam.lookfrom = Point3(0, 0, 3);
+    cam.lookat = Point3(0,0,0);
+
+    cam.samples_per_pixel = 400;
+    cam.max_get_color_depth = 100;
+
+    cam.vertical_fov_rad = degrees_to_radians(90);
+
+    //td::shared_ptr<DiffuseLight> light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
+     //world.add(std::make_shared<Quad>(Point3(-5, 20, -5), Vec3(100,0,0), Vec3(0,0,100), light));
+
+    //std::shared_ptr<CheckerTexture> checkered_text_ptr = 
+       // std::make_shared<CheckerTexture>(0.05, Color(0.1,0.1,0.1), Color(1,1,1));
+    //std::shared_ptr<Lambertian> mat_diffuse_background_ptr = std::make_shared<Lambertian>(red);
+
+    //world.add(std::make_shared<Sphere>(Point3(0,-101.5,-1), 100, red));
+}
+
 int main() {
 
-    Camera camera = Camera(aspect_ratio, image_width); 
+    Camera camera = Camera(); 
 
     HittableList world;
 
@@ -97,12 +136,17 @@ int main() {
     // world.add(std::make_shared<Quad>(Point3(-2,-3, 5), Vec3(4, 0, 0), Vec3(0, 0,-4), lower_teal));
     
     //cornell_box(world, camera);
-    single_triangle(world, camera);
+    //single_triangle(world, camera);
     //single_sphere(world,camera);
+    diamond_obj(world, camera);
 
     world = HittableList(std::make_shared<BhvNode>(world.objects));
 
+    camera.initialize(aspect_ratio, image_width);
     camera.render(world);
 
-
+    std::cerr << "ray and norm are perp: " << 
+    HittableList::case1 << " t out of range: " << HittableList::case2 
+    << " not in triangle: "  << HittableList::case3
+    << " hit: " << HittableList::case4 << std::endl; 
 }

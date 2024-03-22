@@ -5,45 +5,49 @@
 
 class Camera {
     public:
-        double aspect_ratio;
-        int image_width;
-        
-        Camera(double aspect_ratio, int image_width);
+        void initialize(double aspect_ratio, int image_width);
         void render(Hittable& world) const;
         Point3 rand_point_in_square(Point3 pixel_center) const;
 
+        double aspect_ratio;
+        int image_width;
+        
+
+        int samples_per_pixel = 10;
+        int max_get_color_depth = 50;
+
+        Point3 lookfrom;
+        //Point3 lookfrom = Point3(278, 278, -800);
+        Point3 lookat;
+        //Point3 lookat = Point3(278, 278, 0);
+        Vec3 vertical_up = Point3(0.0, 1.0, 0.0);
+
+        double focus_dist = 3.4; 
+        double defocus_angle = 0;
+
+        double vertical_fov_rad = 0.7;
     private:
-        const int samples_per_pixel = 50;
-        const int max_get_color_depth = 50;
 
         // Cornellbox:
-        const Point3 lookfrom = Point3(278, 278, -800);
-        const Point3 lookat = Point3(278, 278, 0);
 
         //const Point3 lookfrom = Point3(-2.0, 2.0, 1.0);
         //const Point3 lookfrom = Point3(0.0, 0.0, 9.0);
         //const Point3 lookat = Point3(0.0, 0.0, 0.0);
-        const Vec3 vertical_up = Point3(0.0, 1.0, 0.0);
 
-        const double focus_dist = 3.4; 
-        const double defocus_angle = 0;
+        Vec3 w, u, v; // Orthonormal basis for camera orientation
 
-        const Vec3 w, u, v; // Orthonormal basis for camera orientation
+        int image_height;
 
-        const int image_height;
+        double viewport_height;
+        double viewport_width;
 
-        const double vertical_fov_rad;
+        Vec3 horizontal;
+        Vec3 vertical;
+        Point3 upper_left_corner;
 
-        const double viewport_height;
-        const double viewport_width;
-
-        const Vec3 horizontal;
-        const Vec3 vertical;
-        const Point3 upper_left_corner;
-
-        const double defocus_radius;
-        const Vec3 defocus_horizontal;
-        const Vec3 defocus_vertical;
+        double defocus_radius;
+        Vec3 defocus_horizontal;
+        Vec3 defocus_vertical;
         
         Ray get_ray(double u, double v) const;
 };

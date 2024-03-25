@@ -45,10 +45,13 @@ class Camera {
         Vec3 vertical;
         Point3 upper_left_corner;
 
+        int stratified_samples_per_pixel_width;
+        double stratified_sample_width;
+
         double defocus_radius;
         Vec3 defocus_horizontal;
         Vec3 defocus_vertical;
-        
+
         Ray get_ray(double u, double v) const;
 };
 

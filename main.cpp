@@ -14,7 +14,7 @@
 #include "ObjLoader.h"
 
 const double aspect_ratio = 1; //16.0 / 9.0;
-const int image_width = 600;
+const int image_width = 200;
 
 void cornell_box(HittableList& world, HittableList& lights, Camera& cam) {
 
@@ -61,15 +61,25 @@ void single_triangle(HittableList& world, Camera& cam) {
     world.add(std::make_shared<Triangle>(Point3(555,0,0), Vec3(0,555,0), Vec3(0,0,555), green));
 }
 
-void obj(HittableList& world, Camera& cam) {
-    auto glass = std::make_shared<Dielectric>(Color(1.0, 1.0, 1.0), 1.5);
-    //std::shared_ptr<Lambertian> white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+void obj(HittableList& world, HittableList& lights, Camera& cam) {
+    //auto glass = std::make_shared<Dielectric>(Color(1.0, 1.0, 1.0), 1.5);
+    std::shared_ptr<Lambertian> white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+    std::shared_ptr<DiffuseLight> light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
     //std::shared_ptr<Lambertian> red  = std::make_shared<Lambertian>(Color(.65, .05, .05));
 
-    ObjLoader::load(world, "./DIAMOND.obj", glass);
+    ObjLoader::load(world, "./Skull_low_res.obj", white);
 
-    cam.lookfrom = Point3(0, 0, 6);
+    world.add(std::make_shared<Sphere>(Point3(0,-100.5,-1), 100, white));
+
+    auto light_quad = std::make_shared<Quad>(Point3(-10, 10, -10), Vec3(10,0,0), Vec3(0,0,10), light);
+    world.add(light_quad);
+    lights.add(light_quad);
+
+
+    cam.lookfrom = Point3(0, 0, -6);
     cam.lookat = Point3(0,0,0);
+
+    cam.samples_per_pixel = 64;
 }
 
 void diamond_obj(HittableList& world, Camera& cam) {
@@ -148,7 +158,8 @@ int main() {
     //single_triangle(world, camera);
     //single_sphere(world,camera);
     HittableList lights; 
-    cornell_box(world, lights, camera);
+    //cornell_box(world, lights, camera);
+    obj(world, lights, camera);
 
     world = HittableList(std::make_shared<BhvNode>(world.objects));
 

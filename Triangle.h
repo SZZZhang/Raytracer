@@ -12,6 +12,8 @@ class Triangle : public Hittable {
             : q{q_}, u{u_}, v{v_}, norm{ unit_vector(cross(u, v)) }, material{mat}, 
             box{Aabb(q, q + u + v)} {
                 box.pad();
+                D = dot(norm, q);
+                norm_scaled = cross(u,v);
             }
         bool hit(const Ray& r, double t_min, double t_max, HitRecord& re) const override;
         Aabb bounding_box() const override { return box; }
@@ -21,6 +23,8 @@ class Triangle : public Hittable {
         Vec3 u;
         Vec3 v;
         Vec3 norm;
+        double D;
+        Vec3 norm_scaled;
         std::shared_ptr<Material> material;
         Aabb box;
 };

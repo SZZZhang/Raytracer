@@ -48,7 +48,7 @@ class Aabb {
         }
 
         void pad() {
-            double delta = 1e-4;
+            double delta = 1e-6;
             double padding = delta/2;
             for (int a = 0; a < 3; ++a) {
                 if (max[a] - min[a] < delta) {

@@ -12,7 +12,6 @@ class Camera {
         double aspect_ratio;
         int image_width;
         
-
         int samples_per_pixel = 10;
         int max_get_color_depth = 50;
 
@@ -26,6 +25,8 @@ class Camera {
         double defocus_angle = 0;
 
         double vertical_fov_rad = 0.7;
+
+        Color background = Color(0,0,0);
     private:
 
         // Cornellbox:

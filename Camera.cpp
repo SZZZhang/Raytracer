@@ -50,7 +50,7 @@ Ray Camera::get_ray(double u, double v) const {
 
 int case1 = 0, case2 = 0, case3 = 0, case4 =0;
 
-Color get_color(const Ray& r, const Hittable& world, const Hittable& lights, int max_depth) {
+Color get_color(const Ray& r, const Hittable& world, const Hittable& lights, const Color& background, int max_depth) {
     HitRecord record;
     if (max_depth <= 0) {
         ++case1;
@@ -75,14 +75,14 @@ Color get_color(const Ray& r, const Hittable& world, const Hittable& lights, int
 
         double scattering_pdf = record.material->scattering_pdf(r, record, scattered);
 
-        Color scattered_color =  get_color(scattered, world, lights, max_depth - 1);
+        Color scattered_color =  get_color(scattered, world, lights, background, max_depth - 1);
 
         Color scattered_col = (attenuation * scattering_pdf * scattered_color) / pdf_val;
         return scattered_col + emitted_color;
     } else {
         // Background
         ++case4;
-        return Color(0,0,0);
+        return background;
     
 
         // Blueish white background
@@ -107,7 +107,7 @@ void Camera::render(Hittable& world, Hittable& lights) const {
                     double v = (static_cast<double>(j)/static_cast<double>(image_height-1))
                      + (static_cast<double>(y) / stratified_samples_per_pixel_width) * stratified_sample_width;
                     Ray r = get_ray(u, v);
-                    Color c = get_color(r, world, lights, max_get_color_depth);
+                    Color c = get_color(r, world, lights, background, max_get_color_depth);
                     pixel_color += c;
                 }
             }

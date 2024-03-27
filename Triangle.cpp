@@ -3,8 +3,6 @@
 #include <iostream>
 
 bool Triangle::hit(const Ray& r, double t_min, double t_max, HitRecord& re) const {
-    double D = dot(norm, q);
-    Point3 x = Point3(0,0,-100);
 
     // ray and norm are perpendicular
     if (std::fabs(dot(norm, r.direction())) < 1e-8) {
@@ -18,8 +16,6 @@ bool Triangle::hit(const Ray& r, double t_min, double t_max, HitRecord& re) cons
         HittableList::case2++;
         return false;
     }
-
-    Vec3 norm_scaled = cross(u,v);
 
     Point3 poi = r.at(t);
     Vec3 dist = poi - q;

@@ -20,9 +20,10 @@ struct HitRecord {
     }
 };
 
-
 class Hittable {
     public:
         virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& re) const = 0;
         virtual Aabb bounding_box() const = 0;
+        virtual double pdf_value(const Point3& _p, const Vec3& _v) const { return 0.0; }
+        virtual Vec3 rand_dir(const Vec3& _) const { return Vec3(1, 0, 0); }
 };

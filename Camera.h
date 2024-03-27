@@ -6,7 +6,7 @@
 class Camera {
     public:
         void initialize(double aspect_ratio, int image_width);
-        void render(Hittable& world) const;
+        void render(Hittable& world, Hittable& lights) const;
         Point3 rand_point_in_square(Point3 pixel_center) const;
 
         double aspect_ratio;

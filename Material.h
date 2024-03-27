@@ -3,12 +3,14 @@
 #include "utils.h"
 #include "Hittable.h"
 #include "Texture.h"
+#include "Pdf.h"
 
 class Material {
     public:
         virtual ~Material() = default;
         virtual bool scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered_ray) const = 0;
         virtual Color emitted(double u, double v, const Point3& point) const { return Color(0, 0, 0); }
+        virtual double scattering_pdf(const Ray& r_in, const HitRecord& record, const Ray& scattered) const { return 0; }
 };
 
 class Lambertian : public Material {
@@ -17,7 +19,9 @@ class Lambertian : public Material {
         Lambertian(const std::shared_ptr<Texture>& text) : texture{text} {}
 
         bool scatter(const Ray& ray, const HitRecord& record, Color& attenuation, Ray& scattered_ray) const override {
-            Vec3 scatter_direction = record.normal + random_vec_unit();
+            Basis uvw;
+            uvw.build_from_w(record.normal);
+            Vec3 scatter_direction = uvw.local(random_cosine_direction());
 
             if (scatter_direction.near_zero()) {
                 scatter_direction = record.normal;
@@ -25,6 +29,10 @@ class Lambertian : public Material {
             scattered_ray = Ray(record.p, scatter_direction, ray.time());
             attenuation = texture->value(record.u, record.v, record.p);
             return true;
+        }
+        double scattering_pdf(const Ray& r_in, const HitRecord& record, const Ray& scattered) const override {
+            double cos_theta = dot(record.normal, unit_vector(scattered.direction()));
+            return cos_theta < 0 ? 0 : cos_theta/pi;
         }
 
     private:

@@ -3,9 +3,6 @@
 #include <iostream>
 
 bool Quad::hit(const Ray& r, double t_min, double t_max, HitRecord& re) const {
-    double D = dot(norm, q);
-    Point3 x = Point3(0,0,-100);
-
     // ray and norm are perpendicular
     if (std::fabs(dot(norm, r.direction())) < 1e-8) {
         return false;
@@ -16,8 +13,6 @@ bool Quad::hit(const Ray& r, double t_min, double t_max, HitRecord& re) const {
     if (t < t_min || t > t_max) {
         return false;
     }
-
-    Vec3 norm_scaled = cross(u,v);
 
     Point3 poi = r.at(t);
     Vec3 dist = poi - q;
@@ -41,6 +36,23 @@ bool Quad::hit(const Ray& r, double t_min, double t_max, HitRecord& re) const {
     re.set_face_normal(r, face_norm);
 
     return true;
+}
+
+double Quad::pdf_value(const Point3& origin, const Vec3& dir) const {
+    HitRecord record;
+    if (!this->hit(Ray(origin, dir), 0.001, infinity, record)) {
+        return 0;
+    }
+
+    double distance_squared = record.t * record.t * dir.length_squared();
+    double cosine = std::fabs(dot(dir, record.normal)/dir.length());
+
+    return distance_squared / (cosine * area);
+}
+
+Vec3 Quad::rand_dir(const Point3& origin) const {
+    Vec3 rand_point = q + (random_double(0.0,1.0) * u) + (random_double(0.0,1.0) * v);
+    return rand_point - origin;
 }
 
 // rotate theta around y axis

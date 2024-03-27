@@ -25,7 +25,7 @@ class HittableList : public Hittable {
         }
         virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const override;
 
-        // TODO: FIX? this is so the pdf value and rand_dir of a light can be easily extracted
+        // TODO: FIX? this is so the pdf value and rand_dir of a light can be easily
         virtual double pdf_value(const Point3& p, const Vec3& v) const override { 
             for (auto object: objects) {
                 return object->pdf_value(p, v);

@@ -14,8 +14,8 @@
 #include "Triangle.h"
 #include "ObjLoader.h"
 
-const double aspect_ratio = 1; //16.0 / 9.0;
-const int image_width = 1000;
+double aspect_ratio = 1; //16.0 / 9.0;
+int image_width = 1000;
 
 void cornell_box(HittableList& world, HittableList& lights, Camera& cam) {
 
@@ -45,8 +45,41 @@ void cornell_box(HittableList& world, HittableList& lights, Camera& cam) {
     cam.lookfrom = Point3(278, 278, -800);
     cam.lookat = Point3(278, 278, 0);
 
-    cam.samples_per_pixel = 64;//4096;//1000;
+    cam.samples_per_pixel = 4096;//1000;
     cam.max_get_color_depth = 200;
+}
+
+void cornell_box_glass_sphere(HittableList& world, HittableList& lights, Camera& cam) {
+
+    std::shared_ptr<Lambertian> red   = std::make_shared<Lambertian>(Color(.65, .05, .05));
+    std::shared_ptr<Lambertian> white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+    std::shared_ptr<Lambertian> green = std::make_shared<Lambertian>(Color(.12, .45, .15));
+    std::shared_ptr<DiffuseLight> light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
+
+    world.add(std::make_shared<Quad>(Point3(555,0,0), Vec3(0,555,0), Vec3(0,0,555), red));
+    world.add(std::make_shared<Quad>(Point3(0,0,0), Vec3(0,555,0), Vec3(0,0,555), green));
+    world.add(std::make_shared<Quad>(Point3(0,0,0), Vec3(555,0,0), Vec3(0,0,555), white));
+    world.add(std::make_shared<Quad>(Point3(555,555,555), Vec3(-555,0,0), Vec3(0,0,-555), white));
+    world.add(std::make_shared<Quad>(Point3(0,0,555), Vec3(555,0,0), Vec3(0,555,0), white));
+
+    auto light_quad = std::make_shared<Quad>(Point3(343, 554, 332), Vec3(-130,0,0), Vec3(0,0,-105), light);
+    lights.add(light_quad);
+    world.add(light_quad);
+    // Glass sphere
+    auto glass = std::make_shared<Dielectric>(Color(1.0, 1.0, 1.0), 1.5);
+    world.add(std::make_shared<Sphere>(Point3(190,90,190), 90, glass));
+    
+    //world.add(Quad::get_box(Point3(130, 0, 65), Point3(295, 165, 230), white));
+    //world.add(Quad::get_box(Point3(265, 0, 295), Point3(430, 330, 460), white));
+    //world.add(Quad::get_box(Point3(130, 0, 65), Vec3(165, 0, 0), Vec3(0,0, 230), 165, white, -18));
+    world.add(Quad::get_box(Point3(265, 0, 295), Vec3(165, 0, 0), Vec3(0, 0, 165), 330, white, 18));
+
+    cam.lookfrom = Point3(278, 278, -800);
+    cam.lookat = Point3(278, 278, 0);
+
+    cam.samples_per_pixel = 4096;//1000;
+    cam.max_get_color_depth = 200;
+    image_width = 1000;
 }
 
 void single_sphere(HittableList& world, Camera& cam) {
@@ -159,7 +192,7 @@ int main() {
     //single_triangle(world, camera);
     //single_sphere(world,camera);
     HittableList lights; 
-    cornell_box(world, lights, camera);
+    cornell_box_glass_sphere(world, lights, camera);
     //obj(world, lights, camera);
 
     world = HittableList(std::make_shared<BhvNode>(world.objects));

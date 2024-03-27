@@ -1,6 +1,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "Vec3.h"
 #include "Sphere.h"
@@ -14,7 +15,7 @@
 #include "ObjLoader.h"
 
 const double aspect_ratio = 1; //16.0 / 9.0;
-const int image_width = 200;
+const int image_width = 1000;
 
 void cornell_box(HittableList& world, HittableList& lights, Camera& cam) {
 
@@ -44,7 +45,7 @@ void cornell_box(HittableList& world, HittableList& lights, Camera& cam) {
     cam.lookfrom = Point3(278, 278, -800);
     cam.lookat = Point3(278, 278, 0);
 
-    cam.samples_per_pixel = 64;// 4096;//1000;
+    cam.samples_per_pixel = 64;//4096;//1000;
     cam.max_get_color_depth = 200;
 }
 
@@ -158,13 +159,33 @@ int main() {
     //single_triangle(world, camera);
     //single_sphere(world,camera);
     HittableList lights; 
-    //cornell_box(world, lights, camera);
-    obj(world, lights, camera);
+    cornell_box(world, lights, camera);
+    //obj(world, lights, camera);
 
     world = HittableList(std::make_shared<BhvNode>(world.objects));
 
     camera.initialize(aspect_ratio, image_width);
-    camera.render(world, lights);
+
+    int num_of_threads = 4;
+    int image_height = camera.image_height;
+    std::vector<std::thread> threads;
+    size_t buff_len = image_width * image_height * 3;
+    unsigned char buff[buff_len];
+
+    for (int i = 0; i < num_of_threads; ++i) {
+        int rows = i == num_of_threads - 1 ? image_height - (num_of_threads - 1) * (image_height/num_of_threads) : 
+            (image_height/num_of_threads);
+        int rows_start = i * (image_height/num_of_threads);
+        int rows_end = rows_start + rows;
+        
+        threads.emplace_back(std::thread([&](int r_st, int r_ed){ camera.render(world, lights, r_st, r_ed, buff);}, rows_start, rows_end));
+    }
+
+    for (int i = 0; i < num_of_threads; ++i) {
+        threads[i].join();
+    }
+
+    camera.write_colors_to_stream(std::cout, buff);
 
     std::cerr << "ray and norm are perp: " << 
     HittableList::case1 << " t out of range: " << HittableList::case2 

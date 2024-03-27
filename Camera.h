@@ -6,8 +6,10 @@
 class Camera {
     public:
         void initialize(double aspect_ratio, int image_width);
-        void render(Hittable& world, Hittable& lights) const;
+        void render(const Hittable& world, const Hittable& lights, 
+            int row_start, int row_end, unsigned char* buff) const;
         Point3 rand_point_in_square(Point3 pixel_center) const;
+        void write_colors_to_stream(std::ostream &out, unsigned char* buff) const;
 
         double aspect_ratio;
         int image_width;
@@ -27,6 +29,8 @@ class Camera {
         double vertical_fov_rad = 0.7;
 
         Color background = Color(0,0,0);
+         
+        int image_height;
     private:
 
         // Cornellbox:
@@ -36,8 +40,6 @@ class Camera {
         //const Point3 lookat = Point3(0.0, 0.0, 0.0);
 
         Vec3 w, u, v; // Orthonormal basis for camera orientation
-
-        int image_height;
 
         double viewport_height;
         double viewport_width;

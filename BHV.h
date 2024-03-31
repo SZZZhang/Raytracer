@@ -17,7 +17,25 @@ class BhvNode : public Hittable {
             return;
         }
         
-        int axis = random_int(0,2);
+        std::vector<double> min_bound = {infinity, infinity, infinity};
+        std::vector<double> max_bound = {neg_infinity, neg_infinity, neg_infinity};
+
+        for (auto object : objects) {
+            for (int a  = 0; a < 3; ++a) {
+                min_bound[a] = std::fmin(min_bound[a], object->bounding_box().min[a]);
+                max_bound[a] = std::fmax(max_bound[a], object->bounding_box().max[a]);
+            }
+        }
+
+        int axis = 0;
+        double max_size = 0;
+        for (int a = 0; a < 3; ++a) {
+            if (max_size < max_bound[a] - min_bound[a]) {
+                max_size = max_bound[a] - min_bound[a];
+                axis = a;
+            }
+        }
+       
         std::sort(objects.begin(), objects.end(), 
             [axis] (std::shared_ptr<Hittable> a, std::shared_ptr<Hittable> b) {
                 return a->bounding_box().min[axis] < b->bounding_box().min[axis];

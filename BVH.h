@@ -5,12 +5,12 @@
 
 #include "Hittable.h"
 
-class BhvNode : public Hittable {
+class BvhNode : public Hittable {
     public:
 
-    BhvNode();
+    BvhNode();
 
-    BhvNode(std::vector<std::shared_ptr<Hittable>> objects) {
+    BvhNode(std::vector<std::shared_ptr<Hittable>> objects) {
         if (objects.size() == 1) {
             box = objects[0]->bounding_box();
             left = objects[0];
@@ -47,8 +47,8 @@ class BhvNode : public Hittable {
             box = Aabb(left->bounding_box(), right->bounding_box());
         } else {
             std::size_t half_size = objects.size() / 2;
-            left = std::make_shared<BhvNode>(std::vector<std::shared_ptr<Hittable>>(objects.begin(), objects.begin() + half_size));
-            right = std::make_shared<BhvNode>(std::vector<std::shared_ptr<Hittable>>(objects.begin() + half_size, objects.end()));
+            left = std::make_shared<BvhNode>(std::vector<std::shared_ptr<Hittable>>(objects.begin(), objects.begin() + half_size));
+            right = std::make_shared<BvhNode>(std::vector<std::shared_ptr<Hittable>>(objects.begin() + half_size, objects.end()));
             box = Aabb(left->bounding_box(), right->bounding_box());
         }
     }

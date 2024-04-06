@@ -1,7 +1,9 @@
-*.ppm
+/*.ppm
+render_archive
 a.out
 .vscode
 a.out.dSYM
 .DS_Store
 render archive
-*.obj
+/*.obj
+Skull_low_res.obj

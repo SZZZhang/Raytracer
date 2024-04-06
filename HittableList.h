@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 class HittableList : public Hittable {
 
@@ -27,15 +28,17 @@ class HittableList : public Hittable {
 
         // TODO: FIX? this is so the pdf value and rand_dir of a light can be easily
         virtual double pdf_value(const Point3& p, const Vec3& v) const override { 
-            for (auto object: objects) {
-                return object->pdf_value(p, v);
+            int rand_idx = random_int(0, objects.size() - 1);
+            if (objects.size() > 0) {
+                return objects[rand_idx]->pdf_value(p, v);
             }
             return 0.0;
         }
 
-        virtual Vec3 rand_dir(const Vec3& origin) const override { 
-            for (auto object: objects) {
-                return object->rand_dir(origin);
+        virtual Vec3 rand_dir(const Vec3& origin) const override {
+            int rand_idx = random_int(0, objects.size() - 1);
+            if (objects.size() > 0) {
+                return objects[rand_idx]->rand_dir(origin);
             }
             return Vec3(1,0,0);
         }

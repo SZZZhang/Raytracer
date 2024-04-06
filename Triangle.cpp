@@ -3,17 +3,14 @@
 #include <iostream>
 
 bool Triangle::hit(const Ray& r, double t_min, double t_max, HitRecord& re) const {
-
     // ray and norm are perpendicular
     if (std::fabs(dot(norm, r.direction())) < 1e-8) {
-        HittableList::case1++;
         return false;
     }
 
     double t = (D - dot(norm, r.origin())) / (dot(norm, r.direction()));
 
     if (t < t_min || t > t_max) {
-        HittableList::case2++;
         return false;
     }
 
@@ -26,7 +23,6 @@ bool Triangle::hit(const Ray& r, double t_min, double t_max, HitRecord& re) cons
     // on the same plane but not in the quad
     if (!(alpha >= 0 && beta >= 0 && alpha + beta <= 1)) {
         //std::cerr << alpha << "  " << beta << std::endl;
-        HittableList::case3++;
         return false;
     }
 
@@ -38,7 +34,6 @@ bool Triangle::hit(const Ray& r, double t_min, double t_max, HitRecord& re) cons
     re.v = beta;
     Vec3 face_norm = Vec3(norm);
     re.set_face_normal(r, face_norm);
-    HittableList::case4++;
 
     return true;
 }

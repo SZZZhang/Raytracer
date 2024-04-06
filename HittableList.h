@@ -9,8 +9,6 @@
 class HittableList : public Hittable {
 
     public:
-
-        inline static int case1 = 0, case2 = 0, case3 = 0, case4 = 0;
         HittableList() {}
         HittableList(std::shared_ptr<Hittable> object) { add(object); }
 

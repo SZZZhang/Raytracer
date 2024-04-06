@@ -1,0 +1,1 @@
+./a.out > stuff1.ppm

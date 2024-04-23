@@ -105,7 +105,7 @@ void mega_render(HittableList& world, HittableList& lights, Camera& cam) {
 
     // glass gem
     auto glass = std::make_shared<Dielectric>(Color(1.0, 1.0, 1.0), 1.5);
-    ObjLoader::load(world, "./Diamond2.obj", glass);
+    ObjLoader::load(world, "./Assets/Diamond2.obj", glass);
 
     // diffuse box: 
     world.add(Quad::get_box(Point3(155, 0, 295), Vec3(165, 0, 0), Vec3(0, 0, 165), 330, blue, 18));
@@ -113,7 +113,7 @@ void mega_render(HittableList& world, HittableList& lights, Camera& cam) {
     cam.lookfrom = Point3(278, 278, -800);
     cam.lookat = Point3(278, 278, 0);
 
-    cam.samples_per_pixel = 4096;//1000;
+    cam.samples_per_pixel = 200;//1000;
     cam.max_get_color_depth = 200;
 
     image_width = 1000;
@@ -139,24 +139,29 @@ void skull_obj(HittableList& world, HittableList& lights, Camera& cam) {
     std::shared_ptr<Lambertian> beige = std::make_shared<Lambertian>(Color(207.0/255.0, 185.0/255.0, 151.0/255.0));
     std::shared_ptr<DiffuseLight> light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
     std::shared_ptr<Metal> mat_metal_ptr = std::make_shared<Metal>(Color(0.5, 0.9, 0.9));
+    std::shared_ptr<Lambertian> pastel_purple  = std::make_shared<Lambertian>(Color(197.0/255.0, 177.0/255.0, 225.0/255.0));
+    std::shared_ptr<Lambertian> pastel_blue  = std::make_shared<Lambertian>(Color(167.0/255.0, 199.0/255.0, 231.0/255.0));
+    std::shared_ptr<Lambertian> pastel_turquoise  = std::make_shared<Lambertian>(Color(180.0/255.0, 211.0/255.0, 178.0/255.0));
     std::shared_ptr<CheckerTexture> checkered_text_ptr = 
        std::make_shared<CheckerTexture>(0.05, Color(0.1,0.1,0.1), Color(1,1,1));
 
-    ObjLoader::load(world, "./Skull_low_resolution.obj", glass);
-    auto background_sphere = std::make_shared<Sphere>(Point3(-20,0,20), 50, white);
+    ObjLoader::load(world, "./Assets/Skull.obj", glass);
+    auto background_sphere = std::make_shared<Sphere>(Point3(-10,0,10), 10, pastel_blue);
     world.add(background_sphere);
 
-    world.add(std::make_shared<Sphere>(Point3(0,-101,-1), 100, beige));
+    world.add(std::make_shared<Sphere>(Point3(0,-101,-1), 100, pastel_turquoise));
+    world.add(std::make_shared<Sphere>(Point3(4,0,4), 2, pastel_purple));
+    world.add(std::make_shared<Sphere>(Point3(-4,0,4), 2, pastel_purple));
 
     auto light_quad = std::make_shared<Quad>(Point3(-10, 20, -10), Vec3(10,0,0), Vec3(0,0,10), light);
     world.add(light_quad);
     lights.add(light_quad);
 
-    cam.lookfrom = Point3(6, 0, -6);
+    cam.lookfrom = Point3(4, 0, -4);
     cam.lookat = Point3(0,0,0);
 
-    cam.samples_per_pixel = 64;
-    image_width = 200;
+    cam.samples_per_pixel = 1000;
+    image_width = 1000;
 }
 
 void three_spheres(HittableList& world, HittableList& lights, Camera& cam) {
@@ -173,11 +178,12 @@ void three_spheres(HittableList& world, HittableList& lights, Camera& cam) {
 }
 
 int main() {
-
     Camera camera = Camera(); 
 
     HittableList world;
     HittableList lights; 
+
+    // Call scene function here
     mega_render(world, lights, camera);
 
     world = HittableList(std::make_shared<BvhNode>(world.objects));
